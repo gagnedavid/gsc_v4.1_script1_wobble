@@ -68,9 +68,9 @@ print "\n#################################\n# GBS-SNP-CROP, Step 1, v.4.1\n#####
 my $pm = new Parallel::ForkManager($threads);
 my $sttime = time;
 
-my $RC_enz1 = reverse $enzyme1;
+my $RC_enz1 = reverse "C[AT]GC";
 $RC_enz1 =~ tr/acgtACGT/tgcaTGCA/;
-my $RC_enz2 = reverse $enzyme2;
+my $RC_enz2 = reverse "AAAA";
 $RC_enz2 =~ tr/acgtACGT/tgcaTGCA/;
 
 # Creating sub-directories
@@ -484,10 +484,10 @@ if ($dataType eq "PE") {
 				$R1read[2] = $R1read[3];
 
 				# Extracting barcodes from reads (exact matches or one mismatch)
-				if ( $R1read[1] =~ /^(\w{4,10})$enzyme1(\w+)$/ ) { EXIT_IF: {
+				if ( $R1read[1] =~ /^(\w{4,8})C[AT]GC(\w+)$/ ) { EXIT_IF: {
 					my $inline_index = $1;
 					$R1read[1] = $2;
-					my $trim_length = length ($1) + length ($enzyme1);
+					my $trim_length = length ($1) + length ("AAAA");
 					$R1read[2] = substr ( $R1read[2], $trim_length, $trim_length + length ($2) );
 
 					if ( $barcode_string =~ /\s$inline_index\s/ ) {
@@ -530,7 +530,7 @@ if ($dataType eq "PE") {
 				}
 
 				# Trimming reads based on presence of $enzyme2 site, barcodes, and Illumina tag
-				if ( $R1read[1] =~ /^(\w+)$RC_enz2[AN][GN][AN][TN][CN][GN][GN][AN][AN]\w+$/ ) {
+				if ( $R1read[1] =~ /^(\w+)GC[AT]G[AN][GN][AN][TN]\w+$/ ) {
 					my $R1_read = $1;
 					my $R1_read_length = length ( $R1_read );
 					$R1read[1] = $R1_read;
